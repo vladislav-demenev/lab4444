@@ -1,0 +1,30 @@
+name: CI/CD realise
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files
+        run: |
+          VERSION=${{  github.ref_name }}
+          mkdir -p "./pages/${VERSION}"
+          cp -r ./en "./pages/${VERSION}/"
+          cp -r ./ru "./pages/${VERSION}/"
+          cp -r ./index.html "./pages/${VERSION}/"
+          cp -r ./README.md "./pages/${VERSION}/"
+
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+           github_token: ${{ secrets.GITHUB_TOKEN }}
+           publish_dir: ./pages
+           keep_files: true
